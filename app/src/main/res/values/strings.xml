@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Mart Companion</string>
+    <string name="accessibility_service_description">Mart butuh izin ini untuk membaca layar dan mengontrol aplikasi lain sesuai perintahmu.</string>
+</resources>
