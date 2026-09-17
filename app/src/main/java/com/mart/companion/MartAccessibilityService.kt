@@ -91,13 +91,27 @@ class MartAccessibilityService : AccessibilityService() {
                         val params = session.parms
                         val x = params["x"]?.toFloatOrNull() ?: 0f
                         val y = params["y"]?.toFloatOrNull() ?: 0f
-                        service.tapAt(x, y)
-                        newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\":\"ok\"}")
+                        val allowed = ConfirmActivity.requestConfirmation(
+                            service, "Tap pada koordinat (${x.toInt()}, ${y.toInt()})"
+                        )
+                        if (!allowed) {
+                            newFixedLengthResponse(Response.Status.FORBIDDEN, "application/json", "{\"status\":\"denied\"}")
+                        } else {
+                            service.tapAt(x, y)
+                            newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\":\"ok\"}")
+                        }
                     }
                     "/open" -> {
                         val pkg = session.parms["package"] ?: ""
-                        val ok = service.openApp(pkg)
-                        newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\":\"$ok\"}")
+                        val allowed = ConfirmActivity.requestConfirmation(
+                            service, "Membuka aplikasi: $pkg"
+                        )
+                        if (!allowed) {
+                            newFixedLengthResponse(Response.Status.FORBIDDEN, "application/json", "{\"status\":\"denied\"}")
+                        } else {
+                            val ok = service.openApp(pkg)
+                            newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\":\"$ok\"}")
+                        }
                     }
                     else -> newFixedLengthResponse(Response.Status.NOT_FOUND, "text/plain", "not found")
                 }
